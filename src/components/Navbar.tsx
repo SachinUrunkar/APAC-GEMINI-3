@@ -1,5 +1,5 @@
 import React from 'react';
-import { Shield, Sparkles, Terminal, Rocket, CheckCircle2, Server, KeyRound, ListChecks, LogIn, LogOut, User as UserIcon, Database } from 'lucide-react';
+import { Shield, Sparkles, Terminal, Rocket, CheckCircle2, Server, KeyRound, ListChecks, LogIn, LogOut, User as UserIcon, Database, Briefcase, Calendar, FileText } from 'lucide-react';
 import { HealthInfo } from '../types';
 import { useAuth } from '../context/AuthContext';
 
@@ -19,6 +19,9 @@ export const Navbar: React.FC<NavbarProps> = ({
   const { currentUser, firestoreConnected, loginWithGoogle, loginAnonymously, logout } = useAuth();
 
   const tabs = [
+    { id: 'engineering_log', label: 'Engineering Logs', icon: Briefcase },
+    { id: 'standup_generator', label: 'Standup Generator', icon: Calendar },
+    { id: 'sprint_summary', label: 'Sprint Summary', icon: FileText },
     { id: 'threat_model', label: 'Threat Modeling', icon: Shield },
     { id: 'security_review', label: 'Security Reviewer', icon: KeyRound },
     { id: 'resilient_prompt', label: 'Resilient AI Prompt', icon: Sparkles },
@@ -38,10 +41,10 @@ export const Navbar: React.FC<NavbarProps> = ({
             <div>
               <div className="flex items-center gap-2.5">
                 <span className="text-base sm:text-lg font-bold tracking-tight text-white uppercase font-sans">
-                  Secure Agent Command
+                  DevLog AI
                 </span>
-                <span className="hidden lg:inline-block text-[11px] text-slate-500 font-mono">
-                  / Cloud Run AI Studio
+                <span className="hidden lg:inline-block text-[11px] text-indigo-400 font-mono">
+                  / Engineering Career Copilot
                 </span>
               </div>
               <p className="text-[11px] text-slate-400 hidden sm:block">

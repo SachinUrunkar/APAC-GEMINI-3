@@ -1,7 +1,8 @@
 {
   "name": "Cloud Run AI Production Studio",
-  "description": "Production-grade AI application deployed with resilient Gemini fallback ladders, threat modeling, and Cloud Run challenge compliance.",
+  "description": "DevLog AI - Engineering Career Copilot: Transforming journal entries into structured engineering work logs with owner-bound Firestore persistence and resilient AI.",
   "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }
-

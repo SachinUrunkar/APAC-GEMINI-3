@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Navbar } from './components/Navbar';
+import { EngineeringLogTab } from './components/EngineeringLogTab';
+import { StandupGeneratorTab } from './components/StandupGeneratorTab';
+import { SprintSummaryTab } from './components/SprintSummaryTab';
 import { ThreatModelingTab } from './components/ThreatModelingTab';
 import { SecurityReviewTab } from './components/SecurityReviewTab';
 import { ResilientPromptTab } from './components/ResilientPromptTab';
@@ -7,22 +10,25 @@ import { CloudRunDeployTab } from './components/CloudRunDeployTab';
 import { VerificationGuideTab } from './components/VerificationGuideTab';
 import { AuditLogTab } from './components/AuditLogTab';
 import { HealthInfo } from './types';
-import { Shield, Sparkles, CheckCircle2, Server, Terminal, Lock } from 'lucide-react';
+import { Shield, Sparkles, CheckCircle2, Server, Terminal, Lock, Briefcase } from 'lucide-react';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState('threat_model');
+  const [activeTab, setActiveTab] = useState('engineering_log');
   const [health, setHealth] = useState<HealthInfo | null>(null);
   const [checkingHealth, setCheckingHealth] = useState(true);
 
   const fetchHealth = async () => {
     try {
       const res = await fetch('/api/health');
-      if (res.ok) {
+      const contentType = res.headers.get('content-type') || '';
+      if (res.ok && contentType.includes('application/json')) {
         const data = await res.json();
-        setHealth(data);
+        if (data && typeof data === 'object') {
+          setHealth(data);
+        }
       }
-    } catch (err) {
-      console.error('Health check failed', err);
+    } catch {
+      // Absorb transient connection resets or server startup transitions gracefully
     } finally {
       setCheckingHealth(false);
     }
@@ -84,6 +90,9 @@ export default function App() {
         </div>
 
         {/* Tab Views */}
+        {activeTab === 'engineering_log' && <EngineeringLogTab />}
+        {activeTab === 'standup_generator' && <StandupGeneratorTab />}
+        {activeTab === 'sprint_summary' && <SprintSummaryTab />}
         {activeTab === 'threat_model' && <ThreatModelingTab />}
         {activeTab === 'security_review' && <SecurityReviewTab />}
         {activeTab === 'resilient_prompt' && <ResilientPromptTab />}

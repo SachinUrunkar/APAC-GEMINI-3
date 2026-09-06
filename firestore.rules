@@ -15,5 +15,35 @@ service cloud.firestore {
     match /users/{userId}/interactions/{interactionId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
+
+    // DevLog AI: Owner-bound engineering work logs isolation
+    match /users/{userId}/engineeringLogs/{logId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Baseline Journal Entries: Backward compatibility isolation
+    match /users/{userId}/journalEntries/{entryId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // AI Achievement Extraction Engine: Owner-bound achievement records isolation
+    match /users/{userId}/achievements/{achievementId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // AI Standup Generator: Owner-bound standup updates isolation
+    match /users/{userId}/standups/{standupId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // AI Sprint Summary Generator: Owner-bound sprint summary reports isolation
+    match /users/{userId}/sprintSummaries/{summaryId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // AI Memory and Work History Assistant: Owner-bound memory queries isolation
+    match /users/{userId}/memoryQueries/{queryId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
   }
 }

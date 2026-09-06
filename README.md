@@ -68,7 +68,24 @@ Deploy secure, owner-bound security rules to Cloud Firestore to prevent unauthor
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    // Zero Insecure Defaults
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
     match /users/{userId}/interactions/{interactionId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    match /users/{userId}/engineeringLogs/{logId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    match /users/{userId}/journalEntries/{entryId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
   }

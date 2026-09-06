@@ -29,6 +29,126 @@
         "userId": { "type": "string" }
       },
       "required": ["id", "type", "input", "output", "modelUsed", "timestamp", "status", "userId"]
+    },
+    "engineeringLog": {
+      "title": "Engineering Work Log",
+      "description": "Structured engineering work log capturing technical work, challenges, learnings, tools, and impact",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "entryType": { "type": "string", "enum": ["engineering_log"] },
+        "title": { "type": "string" },
+        "workPerformed": { "type": "string" },
+        "challengesEncountered": { "type": "string" },
+        "learnings": { "type": "string" },
+        "technologiesUsed": { "type": "string", "description": "Serialized or array list of technologies used" },
+        "impactOutcome": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "userId", "entryType", "title", "workPerformed", "challengesEncountered", "learnings", "impactOutcome", "createdAt"]
+    },
+    "journalEntry": {
+      "title": "Journal Entry",
+      "description": "Baseline personal reflective journal entry",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "entryType": { "type": "string", "enum": ["journal_entry"] },
+        "title": { "type": "string" },
+        "content": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "userId", "entryType", "title", "content", "createdAt"]
+    },
+    "achievementRecord": {
+      "title": "Achievement Record",
+      "description": "Extracted achievement metadata for career growth, performance reviews, promotion packets, and impact reporting",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "engineeringLogId": { "type": "string" },
+        "logTitle": { "type": "string" },
+        "category": {
+          "type": "string",
+          "enum": [
+            "Technical Impact",
+            "Business Impact",
+            "Leadership Signals",
+            "Ownership Signals",
+            "Problem Solving Signals",
+            "Cross-Team Collaboration Signals",
+            "Innovation Signals"
+          ]
+        },
+        "evidence": { "type": "string" },
+        "impactLevel": { "type": "string", "enum": ["HIGH", "MEDIUM", "LOW"] },
+        "confidence": { "type": "string", "enum": ["HIGH", "MEDIUM", "LOW"] },
+        "createdAt": { "type": "string" },
+        "modelUsed": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "userId", "engineeringLogId", "category", "evidence", "impactLevel", "confidence", "createdAt"]
+    },
+    "standupRecord": {
+      "title": "Standup Record",
+      "description": "AI-generated daily engineering standup updates synthesized from logs and achievements",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "period": { "type": "string" },
+        "content": { "type": "string" },
+        "generatedAt": { "type": "string" },
+        "sourceLogs": { "type": "array", "items": { "type": "string" } },
+        "modelUsed": { "type": "string" },
+        "totalLatencyMs": { "type": "number" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "userId", "period", "content", "generatedAt", "sourceLogs"]
+    },
+    "sprintSummaryRecord": {
+      "title": "Sprint Summary Record",
+      "description": "AI-generated executive sprint summaries synthesizing logs, achievements, and standups",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "period": { "type": "string" },
+        "summary": { "type": "string" },
+        "generatedAt": { "type": "string" },
+        "sourceLogs": { "type": "array", "items": { "type": "string" } },
+        "customStartDate": { "type": "string" },
+        "customEndDate": { "type": "string" },
+        "modelUsed": { "type": "string" },
+        "totalLatencyMs": { "type": "number" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "userId", "period", "summary", "generatedAt", "sourceLogs"]
+    },
+    "memoryQueryRecord": {
+      "title": "Memory Query Record",
+      "description": "Owner-bound natural language query and AI answer analyzing work history, engineering logs, achievements, standups, and sprint summaries",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "question": { "type": "string" },
+        "answer": { "type": "string" },
+        "evidence": { "type": "array", "items": { "type": "string" } },
+        "sources": { "type": "array", "items": { "type": "string" } },
+        "modelUsed": { "type": "string" },
+        "totalLatencyMs": { "type": "number" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "userId", "question", "answer", "sources", "createdAt"]
     }
   },
   "firestore": {
@@ -39,6 +159,30 @@
     "/users/{userId}/interactions/{interactionId}": {
       "schema": "interaction",
       "description": "Owner-bound user interactions adhering to Directive 3 zero-insecure defaults"
+    },
+    "/users/{userId}/engineeringLogs/{logId}": {
+      "schema": "engineeringLog",
+      "description": "Owner-bound engineering work logs for DevLog AI Career Copilot"
+    },
+    "/users/{userId}/journalEntries/{entryId}": {
+      "schema": "journalEntry",
+      "description": "Owner-bound baseline reflective journal entries"
+    },
+    "/users/{userId}/achievements/{achievementId}": {
+      "schema": "achievementRecord",
+      "description": "Owner-bound AI extracted achievement records for career growth"
+    },
+    "/users/{userId}/standups/{standupId}": {
+      "schema": "standupRecord",
+      "description": "Owner-bound AI generated daily standup updates"
+    },
+    "/users/{userId}/sprintSummaries/{summaryId}": {
+      "schema": "sprintSummaryRecord",
+      "description": "Owner-bound AI generated sprint summary reports"
+    },
+    "/users/{userId}/memoryQueries/{queryId}": {
+      "schema": "memoryQueryRecord",
+      "description": "Owner-bound AI memory queries and work history analysis"
     }
   }
 }
