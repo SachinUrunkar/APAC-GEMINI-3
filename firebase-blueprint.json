@@ -1,0 +1,44 @@
+{
+  "entities": {
+    "userProfile": {
+      "title": "User Profile",
+      "description": "Profile data for authenticated application user",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "displayName": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["uid", "createdAt"]
+    },
+    "interaction": {
+      "title": "Interaction Record",
+      "description": "Persistent audit record of resilient Gemini generations and threat model scans",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "type": { "type": "string", "enum": ["prompt", "threat-model", "security-review"] },
+        "input": { "type": "string" },
+        "output": { "type": "string" },
+        "modelUsed": { "type": "string" },
+        "latencyMs": { "type": "number" },
+        "fallbackCount": { "type": "number" },
+        "timestamp": { "type": "string" },
+        "status": { "type": "string", "enum": ["success", "failed"] },
+        "userId": { "type": "string" }
+      },
+      "required": ["id", "type", "input", "output", "modelUsed", "timestamp", "status", "userId"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "userProfile",
+      "description": "User profile documents"
+    },
+    "/users/{userId}/interactions/{interactionId}": {
+      "schema": "interaction",
+      "description": "Owner-bound user interactions adhering to Directive 3 zero-insecure defaults"
+    }
+  }
+}

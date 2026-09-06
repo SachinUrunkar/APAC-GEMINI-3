@@ -1,0 +1,19 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Zero Insecure Defaults: Explicitly reject everything unmatched
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Owner-bound user profile isolation
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Directive 3 & Directive 7: Owner-bound user interactions isolation
+    match /users/{userId}/interactions/{interactionId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}
