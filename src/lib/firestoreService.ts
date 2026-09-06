@@ -10,7 +10,7 @@ import {
   serverTimestamp,
 } from 'firebase/firestore';
 import { db } from './firebase';
-import { InteractionRecord, EngineeringLog, JournalEntry, AchievementRecord, StandupRecord, SprintSummaryRecord } from '../types';
+import { InteractionRecord, EngineeringLog, JournalEntry, AchievementRecord, StandupRecord, SprintSummaryRecord, MemoryQueryRecord, DashboardInsightRecord, WeeklyDigestRecord } from '../types';
 
 /**
  * Defensive utility: Recursively strip any undefined values to ensure zero-crash payload hygiene.
@@ -595,6 +595,264 @@ export function subscribeUserSprintSummaries(
     }
   );
 }
+
+// ---------------------------------------------------------------------------
+// AI Memory & Work History Assistant: Owner-Bound Memory Queries (/users/{userId}/memoryQueries)
+// ---------------------------------------------------------------------------
+
+/**
+ * Save an AI-generated Memory Query Record into user's owner-bound collection:
+ * /users/{userId}/memoryQueries/{queryId}
+ */
+export async function saveMemoryQueryRecord(
+  userId: string,
+  record: Omit<MemoryQueryRecord, 'id' | 'userId'> & { id?: string }
+): Promise<string> {
+  if (!userId) {
+    throw new Error('Authentication required: userId is missing');
+  }
+  const queryId =
+    record.id || `mem_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
+  const docRef = doc(db, 'users', userId, 'memoryQueries', queryId);
+
+  const cleanPayload = stripUndefined({
+    ...record,
+    id: queryId,
+    userId,
+    createdAt: record.createdAt || new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    serverSavedAt: serverTimestamp(),
+  });
+
+  await setDoc(docRef, cleanPayload, { merge: true });
+  return queryId;
+}
+
+/**
+ * Delete a Memory Query Record from user's owner-bound collection.
+ */
+export async function deleteMemoryQueryRecord(
+  userId: string,
+  queryId: string
+): Promise<void> {
+  if (!userId || !queryId) return;
+  const docRef = doc(db, 'users', userId, 'memoryQueries', queryId);
+  await deleteDoc(docRef);
+}
+
+/**
+ * Real-time subscription to user's owner-bound Memory Query Records.
+ */
+export function subscribeUserMemoryQueries(
+  userId: string,
+  onUpdate: (records: MemoryQueryRecord[]) => void,
+  onError?: (err: Error) => void
+): () => void {
+  if (!userId) {
+    onUpdate([]);
+    return () => {};
+  }
+
+  const colRef = collection(db, 'users', userId, 'memoryQueries');
+  const q = query(colRef, orderBy('createdAt', 'desc'));
+
+  return onSnapshot(
+    q,
+    (snapshot) => {
+      const results: MemoryQueryRecord[] = [];
+      snapshot.forEach((d) => {
+        const data = d.data();
+        results.push({
+          id: d.id,
+          userId,
+          question: data.question || '',
+          answer: data.answer || '',
+          evidence: Array.isArray(data.evidence) ? data.evidence : [],
+          sources: Array.isArray(data.sources) ? data.sources : [],
+          modelUsed: data.modelUsed,
+          totalLatencyMs: data.totalLatencyMs,
+          createdAt: data.createdAt || new Date().toISOString(),
+          updatedAt: data.updatedAt,
+        });
+      });
+      onUpdate(results);
+    },
+    (err) => {
+      console.warn('[Firestore] Memory queries realtime subscription error:', err);
+      if (onError) onError(err);
+    }
+  );
+}
+// ---------------------------------------------------------------------------
+// Career Impact Dashboard: Owner-Bound AI Insights (/users/{userId}/dashboardInsights)
+// ---------------------------------------------------------------------------
+
+/**
+ * Save an AI-generated Dashboard Insight Record into user's owner-bound collection:
+ * /users/{userId}/dashboardInsights/{insightId}
+ */
+export async function saveDashboardInsightRecord(
+  userId: string,
+  record: Omit<DashboardInsightRecord, 'id' | 'userId'> & { id?: string }
+): Promise<string> {
+  if (!userId) {
+    throw new Error('Authentication required: userId is missing');
+  }
+  const insightId =
+    record.id || `insight_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
+  const docRef = doc(db, 'users', userId, 'dashboardInsights', insightId);
+
+  const cleanPayload = stripUndefined({
+    ...record,
+    id: insightId,
+    userId,
+    createdAt: record.createdAt || new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    serverSavedAt: serverTimestamp(),
+  });
+
+  await setDoc(docRef, cleanPayload, { merge: true });
+  return insightId;
+}
+
+/**
+ * Real-time subscription to user's owner-bound Dashboard Insight Records.
+ */
+export function subscribeUserDashboardInsights(
+  userId: string,
+  onUpdate: (records: DashboardInsightRecord[]) => void,
+  onError?: (err: Error) => void
+): () => void {
+  if (!userId) {
+    onUpdate([]);
+    return () => {};
+  }
+
+  const colRef = collection(db, 'users', userId, 'dashboardInsights');
+  const q = query(colRef, orderBy('createdAt', 'desc'));
+
+  return onSnapshot(
+    q,
+    (snapshot) => {
+      const results: DashboardInsightRecord[] = [];
+      snapshot.forEach((d) => {
+        const data = d.data();
+        results.push({
+          id: d.id,
+          userId,
+          generatedAt: data.generatedAt || new Date().toISOString(),
+          strengths: Array.isArray(data.strengths) ? data.strengths : [],
+          growthAreas: Array.isArray(data.growthAreas) ? data.growthAreas : [],
+          emergingSkills: Array.isArray(data.emergingSkills) ? data.emergingSkills : [],
+          leadershipSignals: Array.isArray(data.leadershipSignals) ? data.leadershipSignals : [],
+          modelUsed: data.modelUsed,
+          totalLatencyMs: data.totalLatencyMs,
+          createdAt: data.createdAt || new Date().toISOString(),
+          updatedAt: data.updatedAt,
+        });
+      });
+      onUpdate(results);
+    },
+    (err) => {
+      console.warn('[Firestore] Dashboard insights realtime subscription error:', err);
+      if (onError) onError(err);
+    }
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Weekly Achievement Digest: Owner-Bound Weekly Digests (/users/{userId}/weeklyDigests)
+// ---------------------------------------------------------------------------
+
+/**
+ * Save a Weekly Digest Record into user's owner-bound collection:
+ * /users/{userId}/weeklyDigests/{digestId}
+ */
+export async function saveWeeklyDigestRecord(
+  userId: string,
+  record: Omit<WeeklyDigestRecord, 'id' | 'userId'> & { id?: string }
+): Promise<string> {
+  if (!userId) {
+    throw new Error('Authentication required: userId is missing');
+  }
+  const digestId =
+    record.id || `digest_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
+  const docRef = doc(db, 'users', userId, 'weeklyDigests', digestId);
+
+  const cleanPayload = stripUndefined({
+    ...record,
+    id: digestId,
+    userId,
+    createdAt: record.createdAt || new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    serverSavedAt: serverTimestamp(),
+  });
+
+  await setDoc(docRef, cleanPayload, { merge: true });
+  return digestId;
+}
+
+/**
+ * Delete a Weekly Digest Record from user's owner-bound collection.
+ */
+export async function deleteWeeklyDigestRecord(
+  userId: string,
+  digestId: string
+): Promise<void> {
+  if (!userId || !digestId) return;
+  const docRef = doc(db, 'users', userId, 'weeklyDigests', digestId);
+  await deleteDoc(docRef);
+}
+
+/**
+ * Real-time subscription to user's owner-bound Weekly Digest Records.
+ */
+export function subscribeUserWeeklyDigests(
+  userId: string,
+  onUpdate: (records: WeeklyDigestRecord[]) => void,
+  onError?: (err: Error) => void
+): () => void {
+  if (!userId) {
+    onUpdate([]);
+    return () => {};
+  }
+
+  const colRef = collection(db, 'users', userId, 'weeklyDigests');
+  const q = query(colRef, orderBy('createdAt', 'desc'));
+
+  return onSnapshot(
+    q,
+    (snapshot) => {
+      const results: WeeklyDigestRecord[] = [];
+      snapshot.forEach((d) => {
+        const data = d.data();
+        results.push({
+          id: d.id,
+          userId,
+          period: data.period || '7d',
+          content: data.content || '',
+          delivered: Boolean(data.delivered),
+          deliveredAt: data.deliveredAt,
+          deliveryError: data.deliveryError,
+          recipientEmail: data.recipientEmail,
+          sourceLogs: Array.isArray(data.sourceLogs) ? data.sourceLogs : [],
+          modelUsed: data.modelUsed,
+          totalLatencyMs: data.totalLatencyMs,
+          createdAt: data.createdAt || new Date().toISOString(),
+          updatedAt: data.updatedAt,
+        });
+      });
+      onUpdate(results);
+    },
+    (err) => {
+      console.warn('[Firestore] Weekly digests realtime subscription error:', err);
+      if (onError) onError(err);
+    }
+  );
+}
+
+
+
 
 
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Shield, Sparkles, Terminal, Rocket, CheckCircle2, Server, KeyRound, ListChecks, LogIn, LogOut, User as UserIcon, Database, Briefcase, Calendar, FileText } from 'lucide-react';
+import { Shield, Sparkles, Terminal, Rocket, CheckCircle2, Server, KeyRound, ListChecks, LogIn, LogOut, User as UserIcon, Database, Briefcase, Calendar, FileText, BrainCircuit, TrendingUp, Mail } from 'lucide-react';
 import { HealthInfo } from '../types';
 import { useAuth } from '../context/AuthContext';
 
@@ -19,9 +19,12 @@ export const Navbar: React.FC<NavbarProps> = ({
   const { currentUser, firestoreConnected, loginWithGoogle, loginAnonymously, logout } = useAuth();
 
   const tabs = [
+    { id: 'career_impact_dashboard', label: 'Career Dashboard', icon: TrendingUp },
     { id: 'engineering_log', label: 'Engineering Logs', icon: Briefcase },
     { id: 'standup_generator', label: 'Standup Generator', icon: Calendar },
     { id: 'sprint_summary', label: 'Sprint Summary', icon: FileText },
+    { id: 'ask_work_history', label: 'Ask Work History', icon: BrainCircuit },
+    { id: 'weekly_digest', label: 'Weekly Digest', icon: Mail },
     { id: 'threat_model', label: 'Threat Modeling', icon: Shield },
     { id: 'security_review', label: 'Security Reviewer', icon: KeyRound },
     { id: 'resilient_prompt', label: 'Resilient AI Prompt', icon: Sparkles },

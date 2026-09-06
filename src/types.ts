@@ -143,6 +143,36 @@ export interface MemoryQueryRecord {
   updatedAt?: string;
 }
 
+export interface DashboardInsightRecord {
+  id: string;
+  userId: string;
+  generatedAt: string;
+  strengths: string[];
+  growthAreas: string[];
+  emergingSkills: string[];
+  leadershipSignals: string[];
+  modelUsed?: string;
+  totalLatencyMs?: number;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface WeeklyDigestRecord {
+  id: string;
+  userId: string;
+  period: string;
+  content: string;
+  delivered: boolean;
+  deliveredAt?: string;
+  deliveryError?: string;
+  recipientEmail?: string;
+  sourceLogs?: string[];
+  modelUsed?: string;
+  totalLatencyMs?: number;
+  createdAt: string;
+  updatedAt?: string;
+}
+
 export interface HealthInfo {
   status: string;
   timestamp: string;

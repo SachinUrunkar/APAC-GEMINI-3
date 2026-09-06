@@ -149,6 +149,46 @@
         "updatedAt": { "type": "string" }
       },
       "required": ["id", "userId", "question", "answer", "sources", "createdAt"]
+    },
+    "dashboardInsightRecord": {
+      "title": "Dashboard Insight Record",
+      "description": "Owner-bound AI career growth insights synthesizing strengths, growth areas, emerging skills, and leadership signals",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "generatedAt": { "type": "string" },
+        "strengths": { "type": "array", "items": { "type": "string" } },
+        "growthAreas": { "type": "array", "items": { "type": "string" } },
+        "emergingSkills": { "type": "array", "items": { "type": "string" } },
+        "leadershipSignals": { "type": "array", "items": { "type": "string" } },
+        "modelUsed": { "type": "string" },
+        "totalLatencyMs": { "type": "number" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "userId", "generatedAt", "strengths", "growthAreas", "emergingSkills", "leadershipSignals"]
+    },
+    "weeklyDigestRecord": {
+      "title": "Weekly Digest Record",
+      "description": "Owner-bound AI weekly engineering digest reports with email delivery status tracking",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "period": { "type": "string" },
+        "content": { "type": "string" },
+        "delivered": { "type": "boolean" },
+        "deliveredAt": { "type": "string" },
+        "deliveryError": { "type": "string" },
+        "recipientEmail": { "type": "string" },
+        "sourceLogs": { "type": "array", "items": { "type": "string" } },
+        "modelUsed": { "type": "string" },
+        "totalLatencyMs": { "type": "number" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "userId", "period", "content", "delivered", "createdAt"]
     }
   },
   "firestore": {
@@ -183,6 +223,14 @@
     "/users/{userId}/memoryQueries/{queryId}": {
       "schema": "memoryQueryRecord",
       "description": "Owner-bound AI memory queries and work history analysis"
+    },
+    "/users/{userId}/dashboardInsights/{insightId}": {
+      "schema": "dashboardInsightRecord",
+      "description": "Owner-bound AI growth insights and career impact analytics"
+    },
+    "/users/{userId}/weeklyDigests/{digestId}": {
+      "schema": "weeklyDigestRecord",
+      "description": "Owner-bound AI weekly achievement digests and email delivery records"
     }
   }
 }

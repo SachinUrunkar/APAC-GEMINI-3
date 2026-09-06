@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Navbar } from './components/Navbar';
 import { EngineeringLogTab } from './components/EngineeringLogTab';
+import { CareerImpactDashboardTab } from './components/CareerImpactDashboardTab';
 import { StandupGeneratorTab } from './components/StandupGeneratorTab';
 import { SprintSummaryTab } from './components/SprintSummaryTab';
+import { AskWorkHistoryTab } from './components/AskWorkHistoryTab';
 import { ThreatModelingTab } from './components/ThreatModelingTab';
 import { SecurityReviewTab } from './components/SecurityReviewTab';
 import { ResilientPromptTab } from './components/ResilientPromptTab';
 import { CloudRunDeployTab } from './components/CloudRunDeployTab';
 import { VerificationGuideTab } from './components/VerificationGuideTab';
 import { AuditLogTab } from './components/AuditLogTab';
+import { WeeklyDigestTab } from './components/WeeklyDigestTab';
 import { HealthInfo } from './types';
 import { Shield, Sparkles, CheckCircle2, Server, Terminal, Lock, Briefcase } from 'lucide-react';
 
@@ -90,15 +93,18 @@ export default function App() {
         </div>
 
         {/* Tab Views */}
+        {activeTab === 'career_impact_dashboard' && <CareerImpactDashboardTab />}
         {activeTab === 'engineering_log' && <EngineeringLogTab />}
         {activeTab === 'standup_generator' && <StandupGeneratorTab />}
         {activeTab === 'sprint_summary' && <SprintSummaryTab />}
+        {activeTab === 'ask_work_history' && <AskWorkHistoryTab />}
         {activeTab === 'threat_model' && <ThreatModelingTab />}
         {activeTab === 'security_review' && <SecurityReviewTab />}
         {activeTab === 'resilient_prompt' && <ResilientPromptTab />}
         {activeTab === 'cloud_run' && <CloudRunDeployTab />}
         {activeTab === 'verification' && <VerificationGuideTab />}
         {activeTab === 'audit_log' && <AuditLogTab />}
+        {activeTab === 'weekly_digest' && <WeeklyDigestTab />}
       </main>
 
       {/* Sleek Footer */}
